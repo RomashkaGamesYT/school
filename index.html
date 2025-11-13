@@ -1,359 +1,578 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Электронный журнал</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Электронный журнал</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
-      margin: 0;
-      padding: 0;
-    }
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    margin: 0;
+    padding: 0;
+    color: #fff;
+  }
 
-    .header {
-      background: linear-gradient(45deg, #6200ea, #3700b3);
-      color: #fff;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
+  .header {
+    background: linear-gradient(45deg, #4b0082, #000);
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
 
-    h2 {
-      margin: 0;
-    }
+  h2 {
+    margin: 0;
+  }
 
-    /* Общий стиль контейнера */
-    .container {
-      max-width: 1000px;
-      margin: 30px auto;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-      backdrop-filter: blur(10px); /* эффект матового стекла */
-    }
+  /* Общий стиль контейнера */
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
 
-    /* Заголовки */
-    h3, h1 {
-      text-align: center;
-      margin-top: 0;
-    }
+  /* Анимация скрытия/показу */
+  .fade-hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+    visibility: hidden;
+  }
 
-    /* Таблица */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      backdrop-filter: blur(4px);
-    }
-    th, td {
-      padding: 12px;
-      text-align: center;
-      border-bottom: 1px solid rgba(255,255,255,0.3);
-    }
-    th {
-      background: rgba(255,255,255,0.2);
-      font-weight: 600;
-    }
+  /* Заголовки */
+  h3, h1 {
+    text-align: center;
+    margin-top: 0;
+  }
 
-    /* Формы и кнопки */
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      margin: 10px 0;
-    }
+  /* Таблица */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    backdrop-filter: blur(4px);
+  }
+  th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+  }
+  th {
+    background: rgba(255,255,255,0.2);
+    font-weight: 600;
+  }
 
-    input {
-      padding: 12px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      background: rgba(255,255,255,0.3);
-      backdrop-filter: blur(4px);
-      outline: none;
-    }
+  /* Формы и кнопки */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin: 10px 0;
+  }
 
-    button {
-      padding: 12px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: all 0.3s ease;
-    }
+  input {
+    padding: 12px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(4px);
+    outline: none;
+    color: #fff;
+    transition: background 0.3s ease;
+  }
+  input:focus {
+    background: rgba(255,255,255,0.3);
+  }
 
-    /* Кнопки разные по стилю */
-    .btn-primary {
-      background: linear-gradient(45deg, #6200ea, #3700b3);
-      color: #fff;
-    }
-    .btn-primary:hover {
-      background: linear-gradient(45deg, #3700b3, #6200ea);
-    }
+  button {
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
 
-    .btn-secondary {
-      background: rgba(255,255,255,0.2);
-      color: #fff;
-    }
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.4);
-    }
+  /* Цветовые стили для кнопок */
+  .btn-primary {
+    background: linear-gradient(45deg, #a445b2, #fa4299);
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(45deg, #fa4299, #a445b2);
+  }
 
-    /* Скрытые элементы */
-    .hidden {
-      display: none;
-    }
-  </style>
+  .btn-secondary {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+  }
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.4);
+  }
+
+  /* Для скрытых элементов */
+  .hidden {
+    display: none;
+  }
+
+  /* Для анимации появления/исчезновения */
+  .fade-in {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  /* Для редактируемых ячеек (для учителя) */
+  .editable {
+    background: rgba(255,255,255,0.1);
+  }
+</style>
 </head>
 <body>
 
-  <div class="header">
-    <h2>Электронный журнал</h2>
+<div class="header">
+  <h2>Электронный журнал</h2>
+</div>
+
+<!-- Вход с выбором роли -->
+<div id="entry-section" class="container fade-in">
+  <h3>Вход</h3>
+  <button class="btn-primary" onclick="showRoleSelection('student')">Войти как ученик</button>
+  <button class="btn-primary" onclick="showRoleSelection('teacher')">Войти как учитель</button>
+</div>
+
+<!-- Вход ученика -->
+<div id="student-login-section" class="container hidden">
+  <h3>Вход как ученик</h3>
+  <div class="form-group">
+    <input type="text" id="student-username" placeholder="Имя ученика" />
+  </div>
+  <div class="form-group">
+    <input type="password" id="student-password" placeholder="Пароль" />
+  </div>
+  <button class="btn-primary" onclick="studentLogin()">Войти</button>
+  <p style="text-align:center; margin-top:10px;"><button class="btn-secondary" onclick="showEntry()">Назад</button></p>
+</div>
+
+<!-- Вход учителя -->
+<div id="teacher-login-section" class="container hidden">
+  <h3>Вход как учитель</h3>
+  <div class="form-group">
+    <input type="text" id="teacher-username" placeholder="Логин учителя" />
+  </div>
+  <div class="form-group">
+    <input type="password" id="teacher-password" placeholder="Пароль" />
+  </div>
+  <button class="btn-primary" onclick="teacherLogin()">Войти</button>
+  <p style="text-align:center; margin-top:10px;"><button class="btn-secondary" onclick="showEntry()">Назад</button></p>
+</div>
+
+<!-- Создание класса (для учителя) -->
+<div id="class-section" class="container hidden">
+  <h3>Создать класс</h3>
+  <div class="form-group">
+    <input type="text" id="className" placeholder="Название класса" />
+  </div>
+  <button class="btn-primary" onclick="createClass()">Создать</button>
+</div>
+
+<!-- Основной раздел для учителя -->
+<div id="teacher-section" class="container hidden">
+  <h1 id="teacher-class-title">Класс: </h1>
+  <button class="btn-secondary" style="margin-bottom:15px;" onclick="showAddStudent()">Добавить ученика</button>
+  <!-- Форма добавления ученика -->
+  <div id="add-student-form" class="hidden" style="margin-bottom:15px;">
+    <div class="form-group">
+      <input type="text" id="studentName" placeholder="Имя ученика" />
+    </div>
+    <div class="form-group">
+      <input type="text" id="studentPassword" placeholder="Пароль" />
+    </div>
+    <button class="btn-primary" onclick="addStudent()">Добавить</button>
   </div>
 
-  <!-- Раздел входа -->
-  <div id="login-section" class="container">
-    <h3>Вход в систему</h3>
+  <!-- Таблица учеников -->
+  <table id="students-table" style="width:100%; margin-top:10px; backdrop-filter: blur(4px); background: rgba(255,255,255,0.2); border-radius:8px;">
+    <thead>
+      <tr>
+        <th>Имя</th>
+        <th>Пароль</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Создание класса (только для учителя) -->
+  <div style="margin-top:20px;">
+    <button class="btn-primary" onclick="showCreateClass()">Создать класс</button>
+  </div>
+  <div id="create-class-div" class="hidden" style="margin-top:10px;">
     <div class="form-group">
-      <input type="text" id="login-username" placeholder="Имя пользователя" />
+      <input type="text" id="newClassName" placeholder="Название нового класса" />
     </div>
-    <div class="form-group">
-      <input type="password" id="login-password" placeholder="Пароль" />
-    </div>
-    <button class="btn-primary" onclick="login()">Войти</button>
-    <p style="text-align:center; margin-top:10px;">или <button class="btn-secondary" onclick="showRegister()">Создать аккаунт</button></p>
+    <button class="btn-primary" onclick="saveNewClass()">Создать класс</button>
   </div>
 
-  <!-- Регистрация учеников -->
-  <div id="register-section" class="container hidden">
-    <h3>Создать аккаунт ученика</h3>
-    <div class="form-group">
-      <input type="text" id="reg-username" placeholder="Имя пользователя" />
-    </div>
-    <div class="form-group">
-      <input type="password" id="reg-password" placeholder="Пароль" />
-    </div>
-    <button class="btn-primary" onclick="register()">Зарегистрироваться</button>
-    <p style="text-align:center; margin-top:10px;"><button class="btn-secondary" onclick="showLogin()">Назад к входу</button></p>
+  <!-- Выбор класса для учителя -->
+  <h3 style="margin-top:20px;">Выберите класс</h3>
+  <div id="class-list"></div>
+
+  <!-- Дневник -->
+  <h2 style="margin-top:30px;">Дневник</h2>
+  <table id="journal">
+    <thead>
+      <tr>
+        <th>Предмет</th>
+        <th>Студент</th>
+        <th>Оценка</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button class="btn-primary" style="margin-top:15px;" onclick="saveGrades()">Сохранить оценки</button>
+
+  <!-- Домашнее задание -->
+  <h2 style="margin-top:30px;">Домашние задания</h2>
+  <div>
+    <ul id="homework-list"></ul>
   </div>
-
-  <!-- Создание класса -->
-  <div id="class-section" class="container hidden">
-    <h3>Создать класс</h3>
-    <div class="form-group">
-      <input type="text" id="className" placeholder="Название класса" />
-    </div>
-    <button class="btn-primary" onclick="createClass()">Создать</button>
+  <div style="margin-top:10px;">
+    <input type="text" id="new-homework" placeholder="Новое задание" style="width:70%; padding:8px; border-radius:8px; border:none;"/>
+    <button class="btn-primary" onclick="addHomework()">Добавить</button>
   </div>
+</div>
 
-  <!-- Класс и дневник -->
-  <div id="classroom-section" class="container hidden">
-    <h1 id="classTitle">Класс: </h1>
-    <button class="btn-secondary" style="margin-bottom:15px;" onclick="showAddStudent()">Добавить ученика</button>
-    <!-- Форма добавления ученика -->
-    <div id="add-student-form" class="hidden" style="margin-bottom:15px;">
-      <div class="form-group">
-        <input type="text" id="studentName" placeholder="Имя ученика" />
-      </div>
-      <div class="form-group">
-        <input type="text" id="studentPassword" placeholder="Пароль" />
-      </div>
-      <button class="btn-primary" onclick="addStudent()">Добавить</button>
-    </div>
-    <table id="students-table" style="width:100%; margin-top:10px; backdrop-filter: blur(4px); background: rgba(255,255,255,0.2); border-radius:8px;">
-      <thead>
-        <tr>
-          <th>Имя</th>
-          <th>Пароль</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+<!-- Страница ученика -->
+<div id="student-section" class="container hidden">
+  <h1 id="student-name-heading">Ученик: </h1>
+  <h2>Домашние задания</h2>
+  <ul id="student-homework"></ul>
+  <h2>Мои оценки</h2>
+  <table id="student-grades">
+    <thead>
+      <tr>
+        <th>Предмет</th>
+        <th>Оценка</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button class="btn-secondary" style="margin-top:20px;" onclick="showEntry()">Выйти</button>
+</div>
 
-    <h2 style="margin-top:30px;">Дневник</h2>
-    <table id="journal">
-      <thead>
-        <tr>
-          <th>Предмет</th>
-          <th>Студент</th>
-          <th>Оценка</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Данные заполнятся -->
-      </tbody>
-    </table>
-    <button class="btn-primary" style="margin-top:15px;" onclick="saveGrades()">Сохранить оценки</button>
-  </div>
+<script>
+const subjects = ["Математика", "Русский язык", "География", "Информатика", "Английский", "Биология", "История", "Физкультура"];
 
-  <script>
-    const subjects = ["Математика", "Русский язык", "География", "Информатика", "Английский", "Биология", "История", "Физкультура"];
+let currentUser = null; // Объект текущего пользователя
+let currentRole = null; // 'student' или 'teacher'
+let classes = JSON.parse(localStorage.getItem('classes')) || {};
 
-    let currentUser = null;
-    let currentClass = '';
-
-    function showSection(id) {
-      document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-    }
-
-    // Вход
-    function login() {
-      const username = document.getElementById('login-username').value.trim();
-      const password = document.getElementById('login-password').value.trim();
-
-      if (!username || !password) {
-        alert('Введите логин и пароль.');
-        return;
+// Функции переключения разделов с анимацией
+function showSection(id) {
+  document.querySelectorAll('.container').forEach(c => {
+    c.classList.add('fade-out');
+    c.classList.remove('fade-in');
+    setTimeout(() => {
+      c.classList.add('hidden');
+      c.classList.remove('fade-out');
+      if (c.id === id || id === '') {
+        c.classList.remove('hidden');
+        c.classList.add('fade-in');
       }
+    }, 500);
+  });
+}
 
-      const userData = JSON.parse(localStorage.getItem('user_' + username));
-      if (userData && userData.password === password) {
-        currentUser = { username, ...userData };
-        // Если пользователь - учитель или админ, можно сделать отдельную проверку
-        // Для учеников - показываем дневник
-        showClassSelection();
-      } else {
-        alert('Неверные логин или пароль.');
-      }
-    }
+// Вход с выбором роли
+function showRoleSelection(role) {
+  document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
+  showSection('entry-section');
+  document.getElementById('entry-section').classList.remove('hidden');
+  document.querySelectorAll('.container').forEach(c => c.classList.remove('fade-out', 'fade-in'));
+  if (role === 'student') {
+    document.getElementById('student-login-section').classList.remove('hidden');
+  } else if (role === 'teacher') {
+    document.getElementById('teacher-login-section').classList.remove('hidden');
+  }
+}
 
-    function showLogin() {
-      showSection('login-section');
-    }
+function studentLogin() {
+  const username = document.getElementById('student-username').value.trim();
+  const password = document.getElementById('student-password').value.trim();
 
-    function showRegister() {
-      showSection('register-section');
-    }
+  if (!username || !password) {
+    alert('Введите логин и пароль.');
+    return;
+  }
 
-    // Регистрация
-    function register() {
-      const username = document.getElementById('reg-username').value.trim();
-      const password = document.getElementById('reg-password').value.trim();
+  const userData = JSON.parse(localStorage.getItem('user_' + username));
+  if (userData && userData.role === 'student' && userData.password === password) {
+    currentUser = { username, ...userData };
+    currentRole = 'student';
+    loadStudentData();
+    showSection('student-section');
+  } else {
+    alert('Неверные логин или пароль.');
+  }
+}
 
-      if (!username || !password) {
-        alert('Заполните все поля.');
-        return;
-      }
+function teacherLogin() {
+  const username = document.getElementById('teacher-username').value.trim();
+  const password = document.getElementById('teacher-password').value.trim();
 
-      if (localStorage.getItem('user_' + username)) {
-        alert('Этот логин уже занят.');
-        return;
-      }
+  if (!username || !password) {
+    alert('Введите логин и пароль.');
+    return;
+  }
 
-      localStorage.setItem('user_' + username, JSON.stringify({ password }));
-      alert('Аккаунт создан! Войдите.');
-      showLogin();
-    }
+  const userData = JSON.parse(localStorage.getItem('user_' + username));
+  if (userData && userData.role === 'teacher' && userData.password === password) {
+    currentUser = { username, ...userData };
+    currentRole = 'teacher';
+    loadTeacherData();
+    showSection('teacher-section');
+  } else {
+    alert('Неверные логин или пароль.');
+  }
+}
 
-    // Создать класс (для учителя или администратора)
-    function showClassSelection() {
-      // Для демонстрации, сразу показываем создание класса
-      showSection('class-section');
-    }
+function showEntry() {
+  showSection('entry-section');
+}
 
-    function createClass() {
-      const className = document.getElementById('className').value.trim();
-      if (!className) {
-        alert('Введите название класса.');
-        return;
-      }
-      localStorage.setItem('class_' + className, JSON.stringify({ students: [], grades: [] }));
-      currentClass = className;
-      document.getElementById('classTitle').innerText = 'Класс: ' + currentClass;
-      loadStudents();
-      showSection('classroom-section');
-    }
+// Создать класс (только для учителя)
+function createClass() {
+  const className = document.getElementById('className').value.trim();
+  if (!className) {
+    alert('Введите название класса.');
+    return;
+  }
+  if (classes[className]) {
+    alert('Этот класс уже существует.');
+    return;
+  }
+  classes[className] = { students: [], grades: [], homework: [] };
+  localStorage.setItem('classes', JSON.stringify(classes));
+  alert('Класс создан! Теперь выберите его для работы.');
+  document.getElementById('className').value = '';
+  showClassList();
+}
 
-    // Добавление ученика
-    function showAddStudent() {
-      document.getElementById('add-student-form').classList.toggle('hidden');
-    }
+// Загрузка данных для учителя
+function loadTeacherData() {
+  const className = currentUser.class;
+  document.getElementById('teacher-class-title').innerText = 'Класс: ' + className;
+  loadClassInfo();
+  showClassList();
+  loadGrades();
+  loadHomework();
+}
 
-    function addStudent() {
-      const name = document.getElementById('studentName').value.trim();
-      const password = document.getElementById('studentPassword').value.trim();
-      if (!name || !password) {
-        alert('Заполните все поля.');
-        return;
-      }
-
-      const classData = JSON.parse(localStorage.getItem('class_' + currentClass));
-      if (classData.students.some(s => s.name === name)) {
-        alert('Этот ученик уже есть.');
-        return;
-      }
-
-      classData.students.push({ name, password });
-      localStorage.setItem('class_' + currentClass, JSON.stringify(classData));
-      document.getElementById('studentName').value = '';
-      document.getElementById('studentPassword').value = '';
-      showAddStudent();
-      loadStudents();
-      loadGrades(); // Обновляем дневник, если нужно
-    }
-
-    function loadStudents() {
-      const tbody = document.querySelector('#students-table tbody');
-      tbody.innerHTML = '';
-      const classData = JSON.parse(localStorage.getItem('class_' + currentClass));
-      if (!classData || !classData.students) return;
-      classData.students.forEach(s => {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${s.name}</td><td>${s.password}</td>`;
-        tbody.appendChild(row);
-      });
-    }
-
-    // Загрузка оценок
-    function loadGrades() {
-      const classData = JSON.parse(localStorage.getItem('class_' + currentClass));
-      const tbody = document.querySelector('#journal tbody');
-      tbody.innerHTML = '';
-
-      if (!classData || !classData.grades) return;
-
-      classData.grades.forEach(g => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${g.subject}</td>
-          <td>${g.student}</td>
-          <td><input type="number" min="1" max="5" value="${g.grade}" /></td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    // Сохранение оценок
-    function saveGrades() {
-      const tbody = document.querySelector('#journal tbody');
-      const rows = tbody.rows;
-      const grades = [];
-
-      for (let i=0; i<rows.length; i++) {
-        const cells = rows[i].cells;
-        const subject = cells[0].innerText;
-        const student = cells[1].innerText;
-        const grade = cells[2].querySelector('input').value;
-        grades.push({ subject, student, grade });
-      }
-
-      const classData = JSON.parse(localStorage.getItem('class_' + currentClass));
-      classData.grades = grades;
-      localStorage.setItem('class_' + currentClass, JSON.stringify(classData));
-      alert('Оценки сохранены!');
-    }
-
-    // Инициализация
-    window.onload = () => {
-      showSection('login-section');
+// Показываем список классов для выбора
+function showClassList() {
+  const container = document.getElementById('class-list');
+  container.innerHTML = '';
+  for (let className in classes) {
+    const btn = document.createElement('button');
+    btn.innerText = className;
+    btn.className = 'btn-primary';
+    btn.style = 'margin:5px;';
+    btn.onclick = () => {
+      currentUser.class = className;
+      loadTeacherData();
     };
-  </script>
+    container.appendChild(btn);
+  }
+}
+
+// Загрузка информации о классе
+function loadClassInfo() {
+  const classData = classes[currentUser.class];
+  if (!classData) return;
+
+  // Загрузка учеников
+  const tbody = document.querySelector('#students-table tbody');
+  tbody.innerHTML = '';
+  classData.students.forEach(s => {
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${s.name}</td><td>${s.password}</td>`;
+    tbody.appendChild(row);
+  });
+}
+
+// Создать и редактировать оценки
+function loadGrades() {
+  const classData = classes[currentUser.class];
+  const tbody = document.querySelector('#journal tbody');
+  tbody.innerHTML = '';
+
+  if (!classData || !classData.grades) return;
+
+  classData.grades.forEach(g => {
+    const isEditable = currentUser.role === 'teacher';
+    const inputAttrs = isEditable ? '' : 'disabled';
+    const inputClass = isEditable ? '' : 'editable';
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${g.subject}</td>
+      <td>${g.student}</td>
+      <td><input type="number" min="0" max="100" value="${g.grade}" ${inputAttrs} class="${inputClass}"/></td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// Сохранить оценки
+function saveGrades() {
+  if (currentUser.role !== 'teacher') {
+    alert('Только учитель может сохранять оценки.');
+    return;
+  }
+  const tbody = document.querySelector('#journal tbody');
+  const rows = Array.from(tbody.rows);
+  const grades = rows.map(row => {
+    const cells = row.cells;
+    const subject = cells[0].innerText;
+    const student = cells[1].innerText;
+    const grade = parseInt(cells[2].querySelector('input').value);
+    if (isNaN(grade) || grade < 0 || grade > 100) {
+      alert('Оценка должна быть числом от 0 до 100.');
+      throw new Error('Некорректная оценка');
+    }
+    return { subject, student, grade };
+  });
+  const classData = classes[currentUser.class];
+  classData.grades = grades;
+  localStorage.setItem('classes', JSON.stringify(classes));
+  alert('Оценки сохранены!');
+}
+
+// Добавление ученика
+function showAddStudent() {
+  document.getElementById('add-student-form').classList.toggle('hidden');
+}
+
+function addStudent() {
+  const name = document.getElementById('studentName').value.trim();
+  const password = document.getElementById('studentPassword').value.trim();
+  if (!name || !password) {
+    alert('Заполните все поля.');
+    return;
+  }
+  const classData = classes[currentUser.class];
+  if (classData.students.some(s => s.name === name)) {
+    alert('Такой ученик уже есть.');
+    return;
+  }
+  classData.students.push({ name, password });
+  localStorage.setItem('classes', JSON.stringify(classes));
+  document.getElementById('studentName').value = '';
+  document.getElementById('studentPassword').value = '';
+  document.getElementById('add-student-form').classList.add('hidden');
+  loadClassInfo();
+}
+
+// Загрузка домашних заданий
+function loadHomework() {
+  const classData = classes[currentUser.class];
+  const list = document.getElementById('homework-list');
+  list.innerHTML = '';
+  if (!classData || !classData.homework) return;
+  classData.homework.forEach(task => {
+    const li = document.createElement('li');
+    li.innerText = task;
+    list.appendChild(li);
+  });
+}
+
+// Добавить домашнее задание
+function addHomework() {
+  const task = document.getElementById('new-homework').value.trim();
+  if (!task) return;
+  const classData = classes[currentUser.class];
+  if (!classData.homework) classData.homework = [];
+  classData.homework.push(task);
+  localStorage.setItem('classes', JSON.stringify(classes));
+  document.getElementById('new-homework').value = '';
+  loadHomework();
+}
+
+// Для ученика: загрузка данных
+function loadStudentData() {
+  document.getElementById('student-name-heading').innerText = 'Ученик: ' + currentUser.username;
+  loadStudentGrades();
+  loadStudentHomework();
+}
+
+function loadStudentGrades() {
+  const classData = classes[currentUser.class];
+  const tbody = document.querySelector('#student-grades tbody');
+  tbody.innerHTML = '';
+  if (!classData || !classData.grades) return;
+  const studentGrades = classData.grades.filter(g => g.student === currentUser.username);
+  studentGrades.forEach(g => {
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${g.subject}</td><td>${g.grade}</td>`;
+    tbody.appendChild(row);
+  });
+}
+
+function loadStudentHomework() {
+  const classData = classes[currentUser.class];
+  const list = document.getElementById('student-homework');
+  list.innerHTML = '';
+  if (!classData || !classData.homework) return;
+  classData.homework.forEach(task => {
+    const li = document.createElement('li');
+    li.innerText = task;
+    list.appendChild(li);
+  });
+}
+
+// Показываем форму создания класса
+function showCreateClass() {
+  document.getElementById('create-class-div').classList.toggle('hidden');
+}
+
+// Сохранить новый класс
+function saveNewClass() {
+  const className = document.getElementById('newClassName').value.trim();
+  if (!className) return;
+  if (classes[className]) {
+    alert('Этот класс уже существует.');
+    return;
+  }
+  classes[className] = { students: [], grades: [], homework: [] };
+  localStorage.setItem('classes', JSON.stringify(classes));
+  alert('Класс создан!');
+  document.getElementById('newClassName').value = '';
+  showClassList();
+  document.getElementById('create-class-div').classList.add('hidden');
+}
+
+// Для учителя: загрузка данных выбранного класса
+function loadClassInfo() {
+  // Можно расширить, если нужно
+}
+
+// Вызов функции при загрузке
+showEntry();
+</script>
 </body>
 </html>
