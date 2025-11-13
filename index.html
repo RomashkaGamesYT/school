@@ -9,28 +9,37 @@
 
     body {
       font-family: 'Roboto', sans-serif;
-      background: #f5f7fa;
+      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
       margin: 0;
       padding: 0;
     }
 
     .header {
-      background-color: #6200ea;
+      background: linear-gradient(45deg, #6200ea, #3700b3);
       color: #fff;
       padding: 20px;
       text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
 
+    h2 {
+      margin: 0;
+    }
+
+    /* Общий стиль контейнера */
     .container {
       max-width: 1000px;
       margin: 30px auto;
       padding: 20px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px); /* эффект матового стекла */
     }
 
-    h1 {
+    /* Заголовки */
+    h3, h1 {
+      text-align: center;
       margin-top: 0;
     }
 
@@ -39,56 +48,67 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
+      backdrop-filter: blur(4px);
     }
     th, td {
       padding: 12px;
       text-align: center;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
     }
     th {
-      background-color: #e0e0e0;
+      background: rgba(255,255,255,0.2);
       font-weight: 600;
     }
 
     /* Формы и кнопки */
-    .login-form, .class-form {
+    .form-group {
       display: flex;
       flex-direction: column;
-      max-width: 300px;
-      margin: 20px auto;
+      margin: 10px 0;
     }
+
     input {
       padding: 12px;
       margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      border: none;
+      border-radius: 8px;
       font-size: 16px;
+      background: rgba(255,255,255,0.3);
+      backdrop-filter: blur(4px);
+      outline: none;
     }
+
     button {
       padding: 12px;
       margin-top: 10px;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 16px;
-      transition: background 0.3s;
-    }
-    .save-btn {
-      background-color: #03dac6;
-      color: #000;
-    }
-    .save-btn:hover {
-      background-color: #018786;
+      transition: all 0.3s ease;
     }
 
-    .login-btn {
-      background-color: #6200ea;
+    /* Кнопки разные по стилю */
+    .btn-primary {
+      background: linear-gradient(45deg, #6200ea, #3700b3);
       color: #fff;
     }
-    .login-btn:hover {
-      background-color: #3700b3;
+    .btn-primary:hover {
+      background: linear-gradient(45deg, #3700b3, #6200ea);
     }
 
+    .btn-secondary {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.4);
+    }
+
+    /* Скрытые элементы */
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -97,28 +117,66 @@
     <h2>Электронный журнал</h2>
   </div>
 
-  <!-- Вход -->
+  <!-- Раздел входа -->
   <div id="login-section" class="container">
     <h3>Вход в систему</h3>
-    <form id="loginForm" class="login-form" onsubmit="return false;">
-      <input type="text" id="username" placeholder="Имя пользователя" required />
-      <input type="password" id="password" placeholder="Пароль" required />
-      <button class="login-btn" onclick="login()">Войти</button>
-    </form>
+    <div class="form-group">
+      <input type="text" id="login-username" placeholder="Имя пользователя" />
+    </div>
+    <div class="form-group">
+      <input type="password" id="login-password" placeholder="Пароль" />
+    </div>
+    <button class="btn-primary" onclick="login()">Войти</button>
+    <p style="text-align:center; margin-top:10px;">или <button class="btn-secondary" onclick="showRegister()">Создать аккаунт</button></p>
+  </div>
+
+  <!-- Регистрация учеников -->
+  <div id="register-section" class="container hidden">
+    <h3>Создать аккаунт ученика</h3>
+    <div class="form-group">
+      <input type="text" id="reg-username" placeholder="Имя пользователя" />
+    </div>
+    <div class="form-group">
+      <input type="password" id="reg-password" placeholder="Пароль" />
+    </div>
+    <button class="btn-primary" onclick="register()">Зарегистрироваться</button>
+    <p style="text-align:center; margin-top:10px;"><button class="btn-secondary" onclick="showLogin()">Назад к входу</button></p>
   </div>
 
   <!-- Создание класса -->
   <div id="class-section" class="container hidden">
     <h3>Создать класс</h3>
-    <form id="classForm" class="class-form" onsubmit="return false;">
-      <input type="text" id="className" placeholder="Название класса" required />
-      <button class="login-btn" onclick="createClass()">Создать</button>
-    </form>
+    <div class="form-group">
+      <input type="text" id="className" placeholder="Название класса" />
+    </div>
+    <button class="btn-primary" onclick="createClass()">Создать</button>
   </div>
 
-  <!-- Основной журнал -->
-  <div id="journal-section" class="container hidden">
-    <h1 id="classTitle">Электронный журнал</h1>
+  <!-- Класс и дневник -->
+  <div id="classroom-section" class="container hidden">
+    <h1 id="classTitle">Класс: </h1>
+    <button class="btn-secondary" style="margin-bottom:15px;" onclick="showAddStudent()">Добавить ученика</button>
+    <!-- Форма добавления ученика -->
+    <div id="add-student-form" class="hidden" style="margin-bottom:15px;">
+      <div class="form-group">
+        <input type="text" id="studentName" placeholder="Имя ученика" />
+      </div>
+      <div class="form-group">
+        <input type="text" id="studentPassword" placeholder="Пароль" />
+      </div>
+      <button class="btn-primary" onclick="addStudent()">Добавить</button>
+    </div>
+    <table id="students-table" style="width:100%; margin-top:10px; backdrop-filter: blur(4px); background: rgba(255,255,255,0.2); border-radius:8px;">
+      <thead>
+        <tr>
+          <th>Имя</th>
+          <th>Пароль</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <h2 style="margin-top:30px;">Дневник</h2>
     <table id="journal">
       <thead>
         <tr>
@@ -128,63 +186,145 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Данные заполнятся скриптом -->
+        <!-- Данные заполнятся -->
       </tbody>
     </table>
-    <button class="save-btn" onclick="saveGrades()">Сохранить оценки</button>
+    <button class="btn-primary" style="margin-top:15px;" onclick="saveGrades()">Сохранить оценки</button>
   </div>
 
   <script>
+    const subjects = ["Математика", "Русский язык", "География", "Информатика", "Английский", "Биология", "История", "Физкультура"];
+
+    let currentUser = null;
     let currentClass = '';
 
-    // Проверка и загрузка данных из localStorage
-    function loadData() {
-      const savedClass = localStorage.getItem('className');
-      if (savedClass) {
-        currentClass = savedClass;
-        document.getElementById('classTitle').innerText = 'Класс: ' + currentClass;
-        loadGrades();
-      }
+    function showSection(id) {
+      document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
     }
 
     // Вход
     function login() {
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-      if (username && password) {
-        document.getElementById('login-section').classList.add('hidden');
-        document.getElementById('class-section').classList.remove('hidden');
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+
+      if (!username || !password) {
+        alert('Введите логин и пароль.');
+        return;
+      }
+
+      const userData = JSON.parse(localStorage.getItem('user_' + username));
+      if (userData && userData.password === password) {
+        currentUser = { username, ...userData };
+        // Если пользователь - учитель или админ, можно сделать отдельную проверку
+        // Для учеников - показываем дневник
+        showClassSelection();
       } else {
-        alert('Пожалуйста, введите логин и пароль.');
+        alert('Неверные логин или пароль.');
       }
     }
 
-    // Создание класса
+    function showLogin() {
+      showSection('login-section');
+    }
+
+    function showRegister() {
+      showSection('register-section');
+    }
+
+    // Регистрация
+    function register() {
+      const username = document.getElementById('reg-username').value.trim();
+      const password = document.getElementById('reg-password').value.trim();
+
+      if (!username || !password) {
+        alert('Заполните все поля.');
+        return;
+      }
+
+      if (localStorage.getItem('user_' + username)) {
+        alert('Этот логин уже занят.');
+        return;
+      }
+
+      localStorage.setItem('user_' + username, JSON.stringify({ password }));
+      alert('Аккаунт создан! Войдите.');
+      showLogin();
+    }
+
+    // Создать класс (для учителя или администратора)
+    function showClassSelection() {
+      // Для демонстрации, сразу показываем создание класса
+      showSection('class-section');
+    }
+
     function createClass() {
       const className = document.getElementById('className').value.trim();
-      if (className) {
-        localStorage.setItem('className', className);
-        currentClass = className;
-        document.getElementById('class-section').classList.add('hidden');
-        document.getElementById('journal-section').classList.remove('hidden');
-        document.getElementById('classTitle').innerText = 'Класс: ' + currentClass;
-        loadGrades();
-      } else {
+      if (!className) {
         alert('Введите название класса.');
+        return;
       }
+      localStorage.setItem('class_' + className, JSON.stringify({ students: [], grades: [] }));
+      currentClass = className;
+      document.getElementById('classTitle').innerText = 'Класс: ' + currentClass;
+      loadStudents();
+      showSection('classroom-section');
+    }
+
+    // Добавление ученика
+    function showAddStudent() {
+      document.getElementById('add-student-form').classList.toggle('hidden');
+    }
+
+    function addStudent() {
+      const name = document.getElementById('studentName').value.trim();
+      const password = document.getElementById('studentPassword').value.trim();
+      if (!name || !password) {
+        alert('Заполните все поля.');
+        return;
+      }
+
+      const classData = JSON.parse(localStorage.getItem('class_' + currentClass));
+      if (classData.students.some(s => s.name === name)) {
+        alert('Этот ученик уже есть.');
+        return;
+      }
+
+      classData.students.push({ name, password });
+      localStorage.setItem('class_' + currentClass, JSON.stringify(classData));
+      document.getElementById('studentName').value = '';
+      document.getElementById('studentPassword').value = '';
+      showAddStudent();
+      loadStudents();
+      loadGrades(); // Обновляем дневник, если нужно
+    }
+
+    function loadStudents() {
+      const tbody = document.querySelector('#students-table tbody');
+      tbody.innerHTML = '';
+      const classData = JSON.parse(localStorage.getItem('class_' + currentClass));
+      if (!classData || !classData.students) return;
+      classData.students.forEach(s => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${s.name}</td><td>${s.password}</td>`;
+        tbody.appendChild(row);
+      });
     }
 
     // Загрузка оценок
     function loadGrades() {
-      const data = JSON.parse(localStorage.getItem('grades_' + currentClass)) || [];
+      const classData = JSON.parse(localStorage.getItem('class_' + currentClass));
       const tbody = document.querySelector('#journal tbody');
       tbody.innerHTML = '';
-      data.forEach(item => {
+
+      if (!classData || !classData.grades) return;
+
+      classData.grades.forEach(g => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${item.subject}</td>
-          <td>${item.student}</td>
-          <td><input type="number" min="1" max="5" value="${item.grade}" /></td>
+          <td>${g.subject}</td>
+          <td>${g.student}</td>
+          <td><input type="number" min="1" max="5" value="${g.grade}" /></td>
         `;
         tbody.appendChild(row);
       });
@@ -196,7 +336,7 @@
       const rows = tbody.rows;
       const grades = [];
 
-      for (let i = 0; i < rows.length; i++) {
+      for (let i=0; i<rows.length; i++) {
         const cells = rows[i].cells;
         const subject = cells[0].innerText;
         const student = cells[1].innerText;
@@ -204,12 +344,16 @@
         grades.push({ subject, student, grade });
       }
 
-      localStorage.setItem('grades_' + currentClass, JSON.stringify(grades));
+      const classData = JSON.parse(localStorage.getItem('class_' + currentClass));
+      classData.grades = grades;
+      localStorage.setItem('class_' + currentClass, JSON.stringify(classData));
       alert('Оценки сохранены!');
     }
 
-    // Автоматическая загрузка при старте
-    loadData();
+    // Инициализация
+    window.onload = () => {
+      showSection('login-section');
+    };
   </script>
 </body>
 </html>
