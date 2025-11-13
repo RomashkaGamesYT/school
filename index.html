@@ -15,8 +15,6 @@
     color: #fff;
   }
 
-  /* Заголовок убран */
-
   /* Общий стиль контейнера */
   .container {
     max-width: 1000px;
@@ -135,16 +133,27 @@
 </head>
 <body>
 
-<!-- Вход в виде простого блока -->
-<div id="entry-section" class="container fade-in" style="max-width:300px; margin:auto; margin-top:100px;">
-  <h3 style="text-align:center;">Вход</h3>
-  <div class="form-group">
-    <input type="text" id="user-login" placeholder="Логин" />
+<!-- Вход и регистрация -->
+<div id="auth-section" class="container" style="max-width:350px; margin:auto; margin-top:50px;">
+  <h3 style="text-align:center;">Регистрация / Вход</h3>
+  <div style="display:flex; justify-content:space-around; margin-bottom:15px;">
+    <button class="btn-secondary" onclick="showAuthMode('login')">Войти</button>
+    <button class="btn-secondary" onclick="showAuthMode('register')">Регистрация</button>
   </div>
-  <div class="form-group">
-    <input type="password" id="user-password" placeholder="Пароль" />
+  <div id="auth-form">
+    <div class="form-group">
+      <input type="text" id="auth-login" placeholder="Логин" />
+    </div>
+    <div class="form-group">
+      <input type="password" id="auth-password" placeholder="Пароль" />
+    </div>
+    <div class="form-group" id="role-selection" style="margin-top:10px;">
+      <label><input type="radio" name="role" value="student" checked> Учень</label>
+      <label style="margin-left:10px;"><input type="radio" name="role" value="teacher"> Учитель</label>
+    </div>
+    <button class="btn-primary" id="auth-submit-btn" onclick="submitAuth()">Подтвердить</button>
+    <p style="text-align:center; margin-top:10px;" id="auth-message"></p>
   </div>
-  <button class="btn-primary" onclick="tryLogin()">Войти</button>
 </div>
 
 <!-- Остальной интерфейс остается без изменений -->
@@ -277,53 +286,57 @@ let currentRole = null; // 'student' или 'teacher'
 // Загружаем классы из localStorage
 let classes = JSON.parse(localStorage.getItem('classes')) || {};
 
-// Функции переключения разделов с анимацией
-function showSection(id) {
-  document.querySelectorAll('.container').forEach(c => {
-    c.classList.add('fade-out');
-    c.classList.remove('fade-in');
-    setTimeout(() => {
-      c.classList.add('hidden');
-      c.classList.remove('fade-out');
-      if (c.id === id || id === '') {
-        c.classList.remove('hidden');
-        c.classList.add('fade-in');
-      }
-    }, 500);
-  });
+// Для хранения текущего режима авторизации
+let authMode = 'login'; // или 'register'
+
+// Показать форму авторизации/регистрации
+function showAuthMode(mode) {
+  authMode = mode;
+  document.getElementById('auth-message').innerText = '';
+  document.getElementById('auth-login').value = '';
+  document.getElementById('auth-password').value = '';
+  document.querySelectorAll('#role-selection input').forEach(r => r.checked = true);
+  document.getElementById('auth-submit-btn').innerText = mode === 'login' ? 'Войти' : 'Зарегистрироваться';
 }
 
-// Вход в виде простого блока
-function showEntry() {
-  document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
-  showSection('entry-section');
-  document.getElementById('entry-section').classList.remove('hidden');
-  document.querySelectorAll('.container').forEach(c => c.classList.remove('fade-out', 'fade-in'));
-}
-
-// Обработчик входа, проверяет логин и пароль
-function tryLogin() {
-  const login = document.getElementById('user-login').value.trim();
-  const password = document.getElementById('user-password').value.trim();
+// Обработка подтверждения
+function submitAuth() {
+  const login = document.getElementById('auth-login').value.trim();
+  const password = document.getElementById('auth-password').value.trim();
+  const role = document.querySelector('#role-selection input[name="role"]:checked').value;
 
   if (!login || !password) {
-    alert('Введите логин и пароль.');
+    document.getElementById('auth-message').innerText = 'Заполните все поля.';
     return;
   }
 
-  const userData = JSON.parse(localStorage.getItem('user_' + login));
-  if (userData && userData.password === password) {
-    currentUser = { username: login, ...userData };
-    currentRole = userData.role;
-    if (currentRole === 'student') {
-      loadStudentData();
-      showSection('student-section');
-    } else if (currentRole === 'teacher') {
-      loadTeacherData();
-      showSection('teacher-section');
+  if (authMode === 'register') {
+    // Регистрация
+    if (localStorage.getItem('user_' + login)) {
+      document.getElementById('auth-message').innerText = 'Этот логин уже занят.';
+      return;
     }
+    // Создаем пользователя
+    localStorage.setItem('user_' + login, JSON.stringify({ password, role, class: role === 'teacher' ? null : '' }));
+    alert('Регистрация прошла успешно! Войдите в систему.');
+    showAuthMode('login');
   } else {
-    alert('Неверные логин или пароль.');
+    // Вход
+    const userData = JSON.parse(localStorage.getItem('user_' + login));
+    if (userData && userData.password === password) {
+      currentUser = { username: login, ...userData };
+      currentRole = userData.role;
+      showEntry();
+      if (currentRole === 'student') {
+        loadStudentData();
+        showSection('student-section');
+      } else if (currentRole === 'teacher') {
+        loadTeacherData();
+        showSection('teacher-section');
+      }
+    } else {
+      document.getElementById('auth-message').innerText = 'Неверный логин или пароль.';
+    }
   }
 }
 
@@ -369,10 +382,10 @@ function teacherLogin() {
   }
 }
 
-// Показываем форму входа
+// Показываем страницу входа/регистрации
 function showEntry() {
   document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
-  showSection('entry-section');
+  showSection('auth-section');
 }
 
 // Создать класс (только для учителя)
@@ -568,59 +581,14 @@ function loadStudentHomework() {
   });
 }
 
-// Выводим список классов для выбора
-function showCreateClass() {
-  document.getElementById('create-class-div').classList.toggle('hidden');
+// Показываем страницу входа/регистрации
+function showEntry() {
+  document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
+  showSection('auth-section');
 }
 
-// Сохранить новый класс
-function saveNewClass() {
-  const className = document.getElementById('newClassName').value.trim();
-  if (!className) return;
-  if (classes[className]) {
-    alert('Этот класс уже существует.');
-    return;
-  }
-  classes[className] = { students: [], grades: [], homework: [] };
-  localStorage.setItem('classes', JSON.stringify(classes));
-  alert('Класс создан!');
-  document.getElementById('newClassName').value = '';
-  showClassList();
-  document.getElementById('create-class-div').classList.add('hidden');
-}
-
-// Для учителя: загрузка данных выбранного класса
-function loadClassInfo() {
-  // Можно расширить, если нужно
-}
-
-// Обработчик входа
-function tryLogin() {
-  const login = document.getElementById('user-login').value.trim();
-  const password = document.getElementById('user-password').value.trim();
-
-  if (!login || !password) {
-    alert('Введите логин и пароль.');
-    return;
-  }
-
-  const userData = JSON.parse(localStorage.getItem('user_' + login));
-  if (userData && userData.password === password) {
-    currentUser = { username: login, ...userData };
-    currentRole = userData.role;
-    if (currentRole === 'student') {
-      loadStudentData();
-      showSection('student-section');
-    } else if (currentRole === 'teacher') {
-      loadTeacherData();
-      showSection('teacher-section');
-    }
-  } else {
-    alert('Неверные логин или пароль.');
-  }
-}
-
-// Остальные функции без изменений
+// Вызовем по умолчанию окно входа
+showAuthMode('login');
 
 </script>
 </body>
