@@ -15,17 +15,7 @@
     color: #fff;
   }
 
-  .header {
-    background: linear-gradient(45deg, #4b0082, #000);
-    color: #fff;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  }
-
-  h2 {
-    margin: 0;
-  }
+  /* Заголовок убран */
 
   /* Общий стиль контейнера */
   .container {
@@ -49,9 +39,8 @@
   }
 
   /* Заголовки */
-  h3, h1 {
-    text-align: center;
-    margin-top: 0;
+  h2 {
+    margin: 0;
   }
 
   /* Таблица */
@@ -146,18 +135,21 @@
 </head>
 <body>
 
-<div class="header">
-  <h2>Электронный журнал</h2>
+<!-- Вход в виде простого блока -->
+<div id="entry-section" class="container fade-in" style="max-width:300px; margin:auto; margin-top:100px;">
+  <h3 style="text-align:center;">Вход</h3>
+  <div class="form-group">
+    <input type="text" id="user-login" placeholder="Логин" />
+  </div>
+  <div class="form-group">
+    <input type="password" id="user-password" placeholder="Пароль" />
+  </div>
+  <button class="btn-primary" onclick="tryLogin()">Войти</button>
 </div>
 
-<!-- Вход с выбором роли -->
-<div id="entry-section" class="container fade-in">
-  <h3>Вход</h3>
-  <button class="btn-primary" onclick="showRoleSelection('student')">Войти как ученик</button>
-  <button class="btn-primary" onclick="showRoleSelection('teacher')">Войти как учитель</button>
-</div>
+<!-- Остальной интерфейс остается без изменений -->
 
-<!-- Вход ученика -->
+<!-- Вход учеников -->
 <div id="student-login-section" class="container hidden">
   <h3>Вход как ученик</h3>
   <div class="form-group">
@@ -281,6 +273,8 @@ const subjects = ["Математика", "Русский язык", "Геогр
 
 let currentUser = null; // Объект текущего пользователя
 let currentRole = null; // 'student' или 'teacher'
+
+// Загружаем классы из localStorage
 let classes = JSON.parse(localStorage.getItem('classes')) || {};
 
 // Функции переключения разделов с анимацией
@@ -299,19 +293,41 @@ function showSection(id) {
   });
 }
 
-// Вход с выбором роли
-function showRoleSelection(role) {
+// Вход в виде простого блока
+function showEntry() {
   document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
   showSection('entry-section');
   document.getElementById('entry-section').classList.remove('hidden');
   document.querySelectorAll('.container').forEach(c => c.classList.remove('fade-out', 'fade-in'));
-  if (role === 'student') {
-    document.getElementById('student-login-section').classList.remove('hidden');
-  } else if (role === 'teacher') {
-    document.getElementById('teacher-login-section').classList.remove('hidden');
+}
+
+// Обработчик входа, проверяет логин и пароль
+function tryLogin() {
+  const login = document.getElementById('user-login').value.trim();
+  const password = document.getElementById('user-password').value.trim();
+
+  if (!login || !password) {
+    alert('Введите логин и пароль.');
+    return;
+  }
+
+  const userData = JSON.parse(localStorage.getItem('user_' + login));
+  if (userData && userData.password === password) {
+    currentUser = { username: login, ...userData };
+    currentRole = userData.role;
+    if (currentRole === 'student') {
+      loadStudentData();
+      showSection('student-section');
+    } else if (currentRole === 'teacher') {
+      loadTeacherData();
+      showSection('teacher-section');
+    }
+  } else {
+    alert('Неверные логин или пароль.');
   }
 }
 
+// Вход как ученик
 function studentLogin() {
   const username = document.getElementById('student-username').value.trim();
   const password = document.getElementById('student-password').value.trim();
@@ -332,6 +348,7 @@ function studentLogin() {
   }
 }
 
+// Вход как учитель
 function teacherLogin() {
   const username = document.getElementById('teacher-username').value.trim();
   const password = document.getElementById('teacher-password').value.trim();
@@ -352,7 +369,9 @@ function teacherLogin() {
   }
 }
 
+// Показываем форму входа
 function showEntry() {
+  document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
   showSection('entry-section');
 }
 
@@ -446,21 +465,25 @@ function saveGrades() {
   }
   const tbody = document.querySelector('#journal tbody');
   const rows = Array.from(tbody.rows);
-  const grades = rows.map(row => {
-    const cells = row.cells;
-    const subject = cells[0].innerText;
-    const student = cells[1].innerText;
-    const grade = parseInt(cells[2].querySelector('input').value);
-    if (isNaN(grade) || grade < 0 || grade > 100) {
-      alert('Оценка должна быть числом от 0 до 100.');
-      throw new Error('Некорректная оценка');
-    }
-    return { subject, student, grade };
-  });
-  const classData = classes[currentUser.class];
-  classData.grades = grades;
-  localStorage.setItem('classes', JSON.stringify(classes));
-  alert('Оценки сохранены!');
+  try {
+    const grades = rows.map(row => {
+      const cells = row.cells;
+      const subject = cells[0].innerText;
+      const student = cells[1].innerText;
+      const gradeVal = parseInt(cells[2].querySelector('input').value);
+      if (isNaN(gradeVal) || gradeVal < 0 || gradeVal > 100) {
+        alert('Оценка должна быть числом от 0 до 100.');
+        throw new Error('Некорректная оценка');
+      }
+      return { subject, student, grade: gradeVal };
+    });
+    const classData = classes[currentUser.class];
+    classData.grades = grades;
+    localStorage.setItem('classes', JSON.stringify(classes));
+    alert('Оценки сохранены!');
+  } catch(e) {
+    // Ошибка уже показана
+  }
 }
 
 // Добавление ученика
@@ -545,7 +568,7 @@ function loadStudentHomework() {
   });
 }
 
-// Показываем форму создания класса
+// Выводим список классов для выбора
 function showCreateClass() {
   document.getElementById('create-class-div').classList.toggle('hidden');
 }
@@ -571,8 +594,34 @@ function loadClassInfo() {
   // Можно расширить, если нужно
 }
 
-// Вызов функции при загрузке
-showEntry();
+// Обработчик входа
+function tryLogin() {
+  const login = document.getElementById('user-login').value.trim();
+  const password = document.getElementById('user-password').value.trim();
+
+  if (!login || !password) {
+    alert('Введите логин и пароль.');
+    return;
+  }
+
+  const userData = JSON.parse(localStorage.getItem('user_' + login));
+  if (userData && userData.password === password) {
+    currentUser = { username: login, ...userData };
+    currentRole = userData.role;
+    if (currentRole === 'student') {
+      loadStudentData();
+      showSection('student-section');
+    } else if (currentRole === 'teacher') {
+      loadTeacherData();
+      showSection('teacher-section');
+    }
+  } else {
+    alert('Неверные логин или пароль.');
+  }
+}
+
+// Остальные функции без изменений
+
 </script>
 </body>
 </html>
